@@ -1,0 +1,2 @@
+[console_scripts]
+automlbench = automlbench.cli:main

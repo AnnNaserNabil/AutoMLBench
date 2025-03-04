@@ -13,36 +13,42 @@ from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, mean_squared_error
 import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE
 
-def train_models(X_train, X_test, y_train, y_test, selected_models=None, hyperparams=None):
+def train_models(X, y, selected_models=None, hyperparams=None, test_size=0.2, random_state=42):
     """
     Trains multiple machine learning models and evaluates their performance.
 
     Parameters:
-    - X_train (pd.DataFrame): Training feature matrix.
-    - X_test (pd.DataFrame): Test feature matrix.
-    - y_train (pd.Series): Training target variable.
-    - y_test (pd.Series): Test target variable.
+    - X (pd.DataFrame): Feature matrix.
+    - y (pd.Series): Target variable.
     - selected_models (list, optional): Names of models to train (default: all models).
     - hyperparams (dict, optional): Custom hyperparameters for models.
+    - test_size (float, optional): Test set proportion (default: 0.2).
+    - random_state (int, optional): Random seed for reproducibility.
 
     Returns:
     - dict: Model performance results.
     """
 
-    # ✅ Step 1: Ensure `y_train` and `y_test` have both classes
-    if len(np.unique(y_train)) < 2 or len(np.unique(y_test)) < 2:
-        raise ValueError("Error: The target variable must contain at least two classes in both training and test sets.")
+    # ✅ Step 1: Ensure `y` has both classes (for binary classification)
+    if len(np.unique(y)) < 2:
+        raise ValueError("Error: The target variable `y` contains only one class. Ensure `y` has both 0s and 1s.")
 
-    # ✅ Step 2: Handle class imbalance **only on training data**
-    smote = SMOTE(random_state=42)
-    X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+    # ✅ Step 2: Split data while preserving class balance
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=random_state, stratify=y
+    )
 
-    # ✅ Step 3: Define available models
+    # ✅ Step 3: Handle class imbalance using SMOTE
+    smote = SMOTE(random_state=random_state)
+    X_train, y_train = smote.fit_resample(X_train, y_train)
+
+    # ✅ Step 4: Define available models
     models = {
         "Random Forest": RandomForestClassifier(class_weight="balanced"),
         "Gradient Boosting": GradientBoostingClassifier(),
@@ -59,17 +65,17 @@ def train_models(X_train, X_test, y_train, y_test, selected_models=None, hyperpa
         "CatBoost": CatBoostClassifier(verbose=0)
     }
 
-    # ✅ Step 4: Filter models if specific ones are selected
+    # ✅ Step 5: Filter models if specific ones are selected
     if selected_models:
         models = {name: models[name] for name in selected_models if name in models}
 
-    # ✅ Step 5: Apply hyperparameters if provided
+    # ✅ Step 6: Apply hyperparameters if provided
     if hyperparams:
         for model_name, params in hyperparams.items():
             if model_name in models:
                 models[model_name].set_params(**params)
 
-    # ✅ Step 6: Define evaluation metrics
+    # ✅ Step 7: Define evaluation metrics
     evaluation_metrics = {
         "Accuracy": accuracy_score,
         "Precision": lambda y_true, y_pred: precision_score(y_true, y_pred, average="weighted", zero_division=1),
@@ -80,15 +86,15 @@ def train_models(X_train, X_test, y_train, y_test, selected_models=None, hyperpa
 
     results = {}
 
-    # ✅ Step 7: Train and evaluate each model
+    # ✅ Step 8: Train and evaluate each model
     for name, model in models.items():
-        model.fit(X_train_resampled, y_train_resampled)
+        model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        # ✅ Step 8: Compute and store performance metrics
+        # ✅ Step 9: Compute and store performance metrics
         results[name] = {metric_name: metric_func(y_test, y_pred) for metric_name, metric_func in evaluation_metrics.items()}
 
-        # ✅ Step 9: Debug - Check unique predictions
+        # ✅ Step 10: Debug - Check unique predictions
         print(f"{name}: Unique Predictions - {np.unique(y_pred)}")
 
     return results

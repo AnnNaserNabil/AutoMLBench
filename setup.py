@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mlcom',
+    name='AutoMLBench',
     version='0.1.0',
     author='Ann Naser Nabil',
     author_email='ann.n.nabil@gmail.com',
     description='A Python package for automated ML model benchmarking and comparison',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/AnnNaserNabil/MLCom',
+    url='https://github.com/AnnNaserNabil/AutoMLBench',
     packages=find_packages(),
     install_requires=[
         'numpy',
@@ -36,7 +36,7 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'mlcom=mlcom.cli:main'  # If you have a CLI tool
+            'AutoMLBench=AutoMLBench.cli:main'  # If you have a CLI tool
         ]
     },
 )

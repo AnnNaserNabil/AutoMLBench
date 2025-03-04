@@ -3,6 +3,7 @@ setup.py
 automlbench/__init__.py
 automlbench/data_loader.py
 automlbench/evaluation.py
+automlbench/hyperparameter_tuning.py
 automlbench/model_train.py
 automlbench/models.py
 automlbench/preprocessing.py

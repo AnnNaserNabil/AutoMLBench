@@ -4,7 +4,10 @@ scikit-learn
 matplotlib
 seaborn
 xgboost
-lightgbm
 shap
 lime
 catboost
+lightgbm
+imbalanced-learn
+pytest
+black

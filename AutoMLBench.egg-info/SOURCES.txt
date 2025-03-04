@@ -1,0 +1,15 @@
+README.md
+setup.py
+AutoMLBench/__init__.py
+AutoMLBench/data_loader.py
+AutoMLBench/model_compare.py
+AutoMLBench/model_train.py
+AutoMLBench/preprocess.py
+AutoMLBench/visualization.py
+AutoMLBench.egg-info/PKG-INFO
+AutoMLBench.egg-info/SOURCES.txt
+AutoMLBench.egg-info/dependency_links.txt
+AutoMLBench.egg-info/entry_points.txt
+AutoMLBench.egg-info/requires.txt
+AutoMLBench.egg-info/top_level.txt
+tests/test_AutoMLBench.py

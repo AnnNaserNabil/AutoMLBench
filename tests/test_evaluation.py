@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from automlbench import evaluate_model
 
+
 def test_evaluate_model():
     # Create dummy dataset
     X_test = np.random.rand(20, 5)

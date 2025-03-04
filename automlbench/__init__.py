@@ -12,6 +12,7 @@ from .model_train import train_models
 import os
 import warnings
 
+
 def suppress_warnings(suppress=True):
     if suppress:
         warnings.filterwarnings("ignore")
@@ -19,6 +20,7 @@ def suppress_warnings(suppress=True):
     else:
         warnings.resetwarnings()
         os.environ.pop("PYTHONWARNINGS", None)
+
 
 __all__ = [
     "load_data",
@@ -31,6 +33,5 @@ __all__ = [
     "time_execution",
     "log_message",
     "suppress_warnings",
-    "train_models"  
+    "train_models",
 ]
-

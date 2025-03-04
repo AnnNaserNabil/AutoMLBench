@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from automlbench import get_models, train_models
 
+
 def test_train_models():
     # Create synthetic dataset
     X_train = np.random.rand(100, 5)

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='automlbench',
-    version='0.1.2',
+    version='0.1.1',
     author='Ann Naser Nabil',
     author_email='ann.n.nabil@gmail.com',
     description='A Python package for automated ML model benchmarking and comparison',

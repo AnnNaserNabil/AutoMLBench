@@ -20,7 +20,7 @@ def train_models(X_train, y_train, X_test, y_test):
         "Decision Tree": DecisionTreeClassifier(),
         "Logistic Regression": LogisticRegression(),
         "Support Vector Machine": SVC(),
-        "K-Nearest Neighbors": KNeighborsClassifier(),
+        "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=min(3, len(X_train))),  # Ensure n_neighbors <= n_samples
         "Naive Bayes": GaussianNB(),
         "Neural Network": MLPClassifier(),
         "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),

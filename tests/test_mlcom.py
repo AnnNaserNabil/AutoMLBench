@@ -6,12 +6,12 @@ def test_load_data():
     assert isinstance(df, pd.DataFrame)
 
 def test_preprocess_data():
-    df = pd.DataFrame({"feature": [1, 2, 3], "label": [0, 1, 0]})
+    df = pd.DataFrame({"feature": [1, 2, 3, 4, 5, 6], "label": [0, 1, 0, 1, 0, 1]})
     X, y = preprocess_data(df, target_column="label")
     assert len(X) == len(y)
 
 def test_train_models():
-    df = pd.DataFrame({"feature": [1, 2, 3, 4], "label": [0, 1, 0, 1]})
+    df = pd.DataFrame({"feature": [1, 2, 3, 4, 5, 6], "label": [0, 1, 0, 1, 0, 1]})
     X, y = preprocess_data(df, target_column="label")
     results = train_models(X, y, X, y)
     assert isinstance(results, dict)

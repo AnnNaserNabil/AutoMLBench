@@ -17,9 +17,13 @@ pip install pandas scikit-learn numpy matplotlib xgboost lightgbm catboost imbal
 
 For local development, clone the repository and install it in **editable mode**:
 ```bash
-git clone https://github.com/your-repo/AutoMLBench.git
-cd AutoMLBench
+git clone https://github.com/AnnNaserNabil/automlbench.git
+cd automlbench
 pip install -e .
+```
+Install from pypi
+```bash
+pip install automlbench
 ```
 
 ---

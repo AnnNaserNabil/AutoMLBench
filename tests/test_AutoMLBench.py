@@ -1,5 +1,5 @@
 import pandas as pd
-from mlcom import load_data, preprocess_data, train_models
+from AutoMLBench import load_data, preprocess_data, train_models
 
 def test_load_data():
     df = load_data("tests/sample.csv")

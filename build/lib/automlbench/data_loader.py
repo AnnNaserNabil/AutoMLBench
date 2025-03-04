@@ -1,7 +1,18 @@
+### data_loader.py
+import os
 import pandas as pd
 
-def load_data(filepath_or_df):
-    """Loads dataset from a file or DataFrame."""
-    if isinstance(filepath_or_df, pd.DataFrame):
-        return filepath_or_df
-    return pd.read_csv(filepath_or_df) if filepath_or_df.endswith('.csv') else pd.read_excel(filepath_or_df)
+def load_data(data_path):
+    ext = os.path.splitext(data_path)[1].lower()
+    if ext == ".csv":
+        return pd.read_csv(data_path)
+    elif ext in [".xlsx", ".xls"]:
+        return pd.read_excel(data_path)
+    elif ext == ".json":
+        return pd.read_json(data_path)
+    elif ext == ".parquet":
+        return pd.read_parquet(data_path)
+    elif ext == ".hdf5":
+        return pd.read_hdf(data_path)
+    else:
+        raise ValueError("Unsupported file format")

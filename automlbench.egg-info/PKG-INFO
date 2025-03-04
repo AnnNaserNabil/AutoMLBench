@@ -49,7 +49,7 @@ pip install automlbench
 from automlbench import (
     load_data, preprocess_data, get_models, get_hyperparameter_grids,
     evaluate_model, plot_performance, tune_hyperparameters, 
-    time_execution, log_message, suppress_warnings, train_models_with_progress
+    time_execution, log_message, suppress_warnings
 )
 ```
 
@@ -74,36 +74,22 @@ models = get_models()
 param_grids = get_hyperparameter_grids()
 ```
 
-### 5. Train Models with Progress Bar
-```python
-from tqdm import tqdm
-
-def train_models_with_progress(models, X_train, y_train):
-    trained_models = {}
-    for name, model in tqdm(models.items(), desc="Training Models"):
-        model.fit(X_train, y_train)
-        trained_models[name] = model
-    return trained_models
-
-trained_models = train_models_with_progress(models, X_train, y_train)
-```
-
-### 6. Evaluate Models
+### 5. Evaluate Models
 ```python
 results = {name: evaluate_model(model, X_test, y_test) for name, model in trained_models.items()}
 ```
 
-### 7. Hyperparameter Tuning
+### 6. Hyperparameter Tuning
 ```python
 best_models = tune_hyperparameters(models, X_train, y_train, param_grids)
 ```
 
-### 8. Plot Performance
+### 7. Plot Performance
 ```python
 plot_performance(results)
 ```
 
-### 9. Suppress Warnings (Optional)
+### 8. Suppress Warnings (Optional)
 ```python
 suppress_warnings(True)  # Set to False if you want to see warnings
 ```

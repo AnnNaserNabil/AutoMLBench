@@ -1,7 +1,7 @@
-# AutoMLBench- Automated ML Model Benchmarking Library
+# automlbench- Automated ML Model Benchmarking Library
 
 ## 📌 Overview
-AutoMLBench is a Python package designed to automate the training, comparison, and evaluation of multiple machine learning models for **classification, regression, and clustering tasks**. It simplifies the **preprocessing, model selection, and performance analysis** process for both beginners and advanced users.
+automlbench is a Python package designed to automate the training, comparison, and evaluation of multiple machine learning models for **classification, regression, and clustering tasks**. It simplifies the **preprocessing, model selection, and performance analysis** process for both beginners and advanced users.
 
 ## 🚀 Features
 ✅ **Automated model benchmarking** – Compare multiple models with minimal effort.  
@@ -15,8 +15,8 @@ AutoMLBench is a Python package designed to automate the training, comparison, a
 
 ### **1️⃣ Install MLCom**
 ```bash
-git clone https://github.com/AnnNaserNabil/AutoMLBench.git
-cd mlcom
+git clone https://github.com/AnnNaserNabil/automlbench.git
+cd automlbench
 pip install -r requirements.txt
 ```
 
@@ -138,7 +138,7 @@ pytest tests/
 
 ---
 ## 📜 Conclusion
-MLCom is a powerful tool for benchmarking machine learning models effortlessly. It automates model training, comparison, and visualization while providing flexibility for advanced feature engineering.
+automlbench is a powerful tool for benchmarking machine learning models effortlessly. It automates model training, comparison, and visualization while providing flexibility for advanced feature engineering.
 
 🚀 **Try AutoMLBench now and simplify your ML workflows!** 🚀
 

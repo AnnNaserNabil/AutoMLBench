@@ -1,7 +1,7 @@
-# MLCom - Automated ML Model Benchmarking Library
+# AutoMLBench- Automated ML Model Benchmarking Library
 
 ## 📌 Overview
-MLCom is a Python package designed to automate the training, comparison, and evaluation of multiple machine learning models for **classification, regression, and clustering tasks**. It simplifies the **preprocessing, model selection, and performance analysis** process for both beginners and advanced users.
+AutoMLBench is a Python package designed to automate the training, comparison, and evaluation of multiple machine learning models for **classification, regression, and clustering tasks**. It simplifies the **preprocessing, model selection, and performance analysis** process for both beginners and advanced users.
 
 ## 🚀 Features
 ✅ **Automated model benchmarking** – Compare multiple models with minimal effort.  
@@ -15,12 +15,12 @@ MLCom is a Python package designed to automate the training, comparison, and eva
 
 ### **1️⃣ Install MLCom**
 ```bash
-git clone https://github.com/AnnNaserNabil/MLCom.git
+git clone https://github.com/AnnNaserNabil/AutoMLBench.git
 cd mlcom
 pip install -r requirements.txt
 ```
 
-### **2️⃣ Install MLCom as a package** (Optional)
+### **2️⃣ Install AutoMLBench as a package** (Optional)
 ```bash
 pip install -e .
 ```
@@ -31,7 +31,7 @@ pip install -e .
 ### **🔹 1. Load Dataset**
 You can load a dataset from a CSV file or a Pandas DataFrame.
 ```python
-from mlcom.data_loader import load_data
+from automlbench.data_loader import load_data
 
 data = load_data("data.csv")  # Load from CSV file
 ```
@@ -39,7 +39,7 @@ data = load_data("data.csv")  # Load from CSV file
 ### **🔹 2. Preprocess Data**
 MLCom allows you to either **automatically** process data or **manually engineer features**.
 ```python
-from mlcom.preprocess import preprocess_data
+from automlbench.preprocess import preprocess_data
 
 # Automatic Preprocessing
 X, y = preprocess_data(data, target_column="label", auto=True)
@@ -59,21 +59,21 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 ### **🔹 4. Train Multiple Models**
 MLCom supports training and evaluating multiple machine learning models.
 ```python
-from mlcom.model_train import train_models
+from automlbench.model_train import train_models
 
 results = train_models(X_train, y_train, X_test, y_test)
 ```
 
 ### **🔹 5. Compare Models**
 ```python
-from mlcom.model_compare import compare_models
+from automlbench.model_compare import compare_models
 
 compare_models(results)
 ```
 
 ### **🔹 6. Visualize Performance**
 ```python
-from mlcom.visualization import plot_results
+from automlbench.visualization import plot_results
 
 plot_results(results)
 ```
@@ -96,10 +96,10 @@ MLCom supports the following machine learning models out of the box:
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
-from mlcom.preprocess import preprocess_data
-from mlcom.model_train import train_models
-from mlcom.model_compare import compare_models
-from mlcom.visualization import plot_results
+from automlbench.preprocess import preprocess_data
+from automlbench.model_train import train_models
+from automlbench.model_compare import compare_models
+from automlbench.visualization import plot_results
 
 # Load dataset
 data = fetch_california_housing()
@@ -140,5 +140,5 @@ pytest tests/
 ## 📜 Conclusion
 MLCom is a powerful tool for benchmarking machine learning models effortlessly. It automates model training, comparison, and visualization while providing flexibility for advanced feature engineering.
 
-🚀 **Try MLCom now and simplify your ML workflows!** 🚀
+🚀 **Try AutoMLBench now and simplify your ML workflows!** 🚀
 

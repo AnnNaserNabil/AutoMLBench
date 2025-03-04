@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: automlbench
-Version: 0.1.1
+Version: 0.1.3
 Summary: A Python package for automated ML model benchmarking and comparison
 Home-page: https://github.com/AnnNaserNabil/automlbench
 Author: Ann Naser Nabil
@@ -26,77 +26,199 @@ Requires-Dist: lightgbm
 Requires-Dist: shap
 Requires-Dist: lime
 
-# AutoMLBench- Automated ML Model Benchmarking Library
 
-Automlbench is a Python library for automated machine learning model benchmarking. It simplifies the process of comparing multiple machine learning models by providing utilities for data loading, preprocessing, model selection, hyperparameter tuning, evaluation, and visualization. The library is designed to streamline model experimentation and performance analysis, making it ideal for data scientists and machine learning practitioners.
+### **Automated Machine Learning Benchmarking Library**
+📌 **AutoMLBench** is a Python library designed to **automate the machine learning pipeline**, including:
+- **Data loading**
+- **Preprocessing**
+- **Model training**
+- **Evaluation**
+- **Performance visualization**
 
-## 🚀 Features
-✅ **Automated model benchmarking** – Compare multiple models with minimal effort.  
-✅ **Flexible preprocessing** – Choose between automatic or manual feature engineering.  
-✅ **Performance visualization** – Generate insightful plots for model comparison.  
-✅ **Customizable feature handling** – Supports missing value imputation, scaling, and encoding.  
-✅ **Multi-model training** – Supports **Random Forest, Gradient Boosting, XGBoost, LightGBM, CatBoost**, and more.
+---
 
-
-
-## Installation
+## **Installation**
+Ensure you have all the necessary dependencies installed:
 ```bash
-pip install automlbench
+pip install pandas scikit-learn numpy matplotlib xgboost lightgbm catboost imbalanced-learn
 ```
 
-## Importing Automlbench
-```python
-from automlbench import (
-    load_data, preprocess_data, get_models, get_hyperparameter_grids,
-    evaluate_model, plot_performance, tune_hyperparameters, 
-    time_execution, log_message, suppress_warnings
-)
+For local development, clone the repository and install it in **editable mode**:
+```bash
+git clone https://github.com/your-repo/AutoMLBench.git
+cd AutoMLBench
+pip install -e .
 ```
 
-## Features
-### 1. Load Data
+---
+
+## **Modules Overview**
+AutoMLBench consists of several modules, each handling a specific part of the ML pipeline.
+
+| Module                | Functionality |
+|-----------------------|--------------|
+| `data_loader.py`      | Loads data from multiple file formats (`CSV`, `Excel`, `JSON`, `Parquet`, `HDF5`). |
+| `preprocessing.py`    | Handles missing values, feature scaling, and categorical encoding. |
+| `models.py`          | Provides predefined machine learning models (Random Forest, XGBoost, LightGBM, etc.). |
+| `model_train.py`      | Trains multiple models with class balancing and metric evaluation. |
+| `hyperparameter_tuning.py` | Uses `GridSearchCV` for hyperparameter optimization. |
+| `evaluation.py`       | Computes performance metrics (Accuracy, Precision, Recall, F1-Score, AUC-ROC). |
+| `visualization.py`    | Generates performance comparison plots. |
+| `utils.py`            | Provides logging and execution time utilities. |
+| `__init__.py`         | Exposes core functionalities for easy import. |
+
+---
+
+## **Usage Guide**
+### **1️⃣ Load the Dataset**
+AutoMLBench supports direct loading of datasets.
 ```python
-df = load_data("dataset.csv")
+import pandas as pd
+from automlbench import load_data
+
+# Load Titanic dataset
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
 ```
 
-### 2. Preprocess Data
+---
+
+### **2️⃣ Preprocess the Data**
 ```python
-X_train, X_test, y_train, y_test = preprocess_data(df, target_column="target")
+from automlbench import preprocess_data
+
+# Define the target column
+target_column = "Survived"
+
+# Preprocess dataset (handles missing values, encoding, scaling)
+X_train, X_test, y_train, y_test = preprocess_data(df, target_column)
 ```
 
-### 3. Get Available Models
+---
+
+### **3️⃣ Train Machine Learning Models**
 ```python
+from automlbench import get_models, train_models
+
+# Get predefined models
 models = get_models()
+
+# Train all models
+results = train_models(X_train, X_test, y_train, y_test)
+
+# Display model results
+print(results)
 ```
 
-### 4. Hyperparameter Grids
+---
+
+### **4️⃣ Evaluate Model Performance**
 ```python
-param_grids = get_hyperparameter_grids()
+from automlbench import evaluate_model
+
+# Evaluate a specific model (e.g., Random Forest)
+rf_model = models["Random Forest"].fit(X_train, y_train)
+metrics = evaluate_model(rf_model, X_test, y_test)
+
+print(metrics)
 ```
 
-### 5. Evaluate Models
+---
+
+### **5️⃣ Visualize Model Performance**
 ```python
-results = {name: evaluate_model(model, X_test, y_test) for name, model in trained_models.items()}
+from automlbench import plot_performance
+
+# Plot model comparison for multiple metrics
+plot_performance(results, metrics=["Accuracy", "Precision", "Recall", "F1-Score", "RMSE"])
 ```
 
-### 6. Hyperparameter Tuning
+---
+
+### **6️⃣ Hyperparameter Tuning (Optional)**
+If you want to fine-tune a model:
 ```python
-best_models = tune_hyperparameters(models, X_train, y_train, param_grids)
+from automlbench import tune_hyperparameters
+
+# Define hyperparameter grid
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [None, 10, 20]
+}
+
+# Tune the Random Forest model
+best_model, best_params = tune_hyperparameters(models["Random Forest"], param_grid, X_train, y_train)
+
+print(f"Best Model: {best_model}")
+print(f"Best Parameters: {best_params}")
 ```
 
-### 7. Plot Performance
+---
+
+## **Example Workflow**
+Here's a full **end-to-end pipeline** using AutoMLBench:
 ```python
+import pandas as pd
+from automlbench import (
+    preprocess_data, get_models, train_models, evaluate_model, plot_performance
+)
+
+# Load dataset
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
+
+# Preprocess data
+X_train, X_test, y_train, y_test = preprocess_data(df, "Survived")
+
+# Train models
+results = train_models(X_train, X_test, y_train, y_test)
+
+# Display evaluation metrics
+for model_name, model in get_models().items():
+    model.fit(X_train, y_train)
+    print(f"{model_name} Metrics:", evaluate_model(model, X_test, y_test))
+
+# Plot performance
 plot_performance(results)
 ```
 
-### 8. Suppress Warnings (Optional)
+---
+
+## **Troubleshooting**
+### **Common Issues & Fixes**
+#### ❌ **ImportError: cannot import name 'train_models'**
+✔ **Fix:** Ensure `train_models` is listed in `__init__.py`:
 ```python
-suppress_warnings(True)  # Set to False if you want to see warnings
+from .model_train import train_models
 ```
 
-## Utilities
-- `time_execution(func)`: Measure execution time of a function.
-- `log_message(msg)`: Log messages for debugging.
+#### ❌ **ModuleNotFoundError: No module named 'automlbench'**
+✔ **Fix:** Reinstall the package in editable mode:
+```bash
+pip install -e .
+```
 
-## License
-This project is licensed under the MIT License.
+#### ❌ **ValueError: The target variable must contain at least two classes**
+✔ **Fix:** Ensure the dataset has at least **two unique classes** in the target column.
+
+---
+
+## **Future Improvements**
+✅ **Ensemble Model Support**  
+✅ **Feature Selection Methods**  
+✅ **AutoML Integration** (e.g., with Optuna, Hyperopt)  
+✅ **Support for Regression Models**  
+
+---
+
+## **Contributing**
+We welcome contributions! To contribute:
+1. **Fork the repository**
+2. **Create a new branch** (`feature-branch`)
+3. **Make changes and test**
+4. **Submit a pull request (PR)**
+
+---
+
+## **License**
+AutoMLBench is released under the **MIT License**.

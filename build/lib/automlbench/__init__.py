@@ -6,6 +6,8 @@ from .evaluation import evaluate_model
 from .visualization import plot_performance
 from .hyperparameter_tuning import tune_hyperparameters
 from .utils import time_execution, log_message
+from .model_train import train_models
+
 
 import os
 import warnings
@@ -28,5 +30,7 @@ __all__ = [
     "tune_hyperparameters",
     "time_execution",
     "log_message",
-    "suppress_warnings"
+    "suppress_warnings",
+    "train_models"  
 ]
+

@@ -26,6 +26,7 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           pip install -r requirements.txt
+          pip install -e .  # Install MLCom as a package
           pip install pytest
 
       - name: 🧪 Run Tests

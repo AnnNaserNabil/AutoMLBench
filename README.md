@@ -15,7 +15,7 @@ MLCom is a Python package designed to automate the training, comparison, and eva
 
 ### **1️⃣ Install MLCom**
 ```bash
-git clone https://github.com/your-repo/mlcom.git
+git clone https://github.com/AnnNaserNabil/MLCom.git
 cd mlcom
 pip install -r requirements.txt
 ```

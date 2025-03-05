@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 
+
 def load_data(data_path):
     ext = os.path.splitext(data_path)[1].lower()
     if ext == ".csv":

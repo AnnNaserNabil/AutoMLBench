@@ -1,0 +1,314 @@
+### __init__.py
+from .data_loader import load_data
+from .preprocessing import preprocess_data
+from .models import get_models, get_hyperparameter_grids
+from .evaluation import evaluate_model
+from .visualization import plot_performance
+from .hyperparameter_tuning import tune_hyperparameters
+from .utils import time_execution, log_message
+
+import os
+import warnings
+
+def suppress_warnings(suppress=True):
+    if suppress:
+        warnings.filterwarnings("ignore")
+        os.environ["PYTHONWARNINGS"] = "ignore"
+    else:
+        warnings.resetwarnings()
+        os.environ.pop("PYTHONWARNINGS", None)
+
+__all__ = [
+    "load_data",
+    "preprocess_data",
+    "get_models",
+    "get_hyperparameter_grids",
+    "evaluate_model",
+    "plot_performance",
+    "tune_hyperparameters",
+    "time_execution",
+    "log_message",
+    "suppress_warnings"
+]
+
+
+
+### data_loader.py
+import os
+import pandas as pd
+
+def load_data(data_path):
+    ext = os.path.splitext(data_path)[1].lower()
+    if ext == ".csv":
+        return pd.read_csv(data_path)
+    elif ext in [".xlsx", ".xls"]:
+        return pd.read_excel(data_path)
+    elif ext == ".json":
+        return pd.read_json(data_path)
+    elif ext == ".parquet":
+        return pd.read_parquet(data_path)
+    elif ext == ".hdf5":
+        return pd.read_hdf(data_path)
+    else:
+        raise ValueError("Unsupported file format")
+
+
+### evaluation.py
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.preprocessing import label_binarize
+import numpy as np
+
+def evaluate_model(model, X_test, y_test):
+    y_pred = model.predict(X_test)
+    
+    metrics = {
+        "Accuracy": accuracy_score(y_test, y_pred),
+        "Precision": precision_score(y_test, y_pred, average='weighted', zero_division=1),
+        "Recall": recall_score(y_test, y_pred, average='weighted', zero_division=1),
+        "F1 Score": f1_score(y_test, y_pred, average='weighted', zero_division=1),
+    }
+    
+    if hasattr(model, "predict_proba"):
+        if len(set(y_test)) > 2:  # Multiclass case
+            try:
+                metrics["AUC-ROC"] = roc_auc_score(y_test, model.predict_proba(X_test), multi_class='ovr')
+            except ValueError:
+                metrics["AUC-ROC"] = np.nan  # Handle cases where AUC-ROC cannot be computed
+        else:  # Binary case
+            metrics["AUC-ROC"] = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
+    
+    return metrics
+
+
+
+### hyperparameter_tuning.py
+from sklearn.model_selection import GridSearchCV
+
+def tune_hyperparameters(model, param_grid, X_train, y_train):
+    grid_search = GridSearchCV(model, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+    return grid_search.best_estimator_, grid_search.best_params_
+
+
+# model_train.py
+
+from sklearn.ensemble import (
+    RandomForestClassifier,
+    GradientBoostingClassifier,
+    ExtraTreesClassifier,
+    AdaBoostClassifier
+)
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, mean_squared_error
+import numpy as np
+import pandas as pd
+from imblearn.over_sampling import SMOTE
+
+def train_models(X_train, X_test, y_train, y_test, selected_models=None, hyperparams=None):
+    """
+    Trains multiple machine learning models and evaluates their performance.
+
+    Parameters:
+    - X_train (pd.DataFrame): Training feature matrix.
+    - X_test (pd.DataFrame): Test feature matrix.
+    - y_train (pd.Series): Training target variable.
+    - y_test (pd.Series): Test target variable.
+    - selected_models (list, optional): Names of models to train (default: all models).
+    - hyperparams (dict, optional): Custom hyperparameters for models.
+
+    Returns:
+    - dict: Model performance results.
+    """
+
+    # ✅ Step 1: Ensure `y_train` and `y_test` have both classes
+    if len(np.unique(y_train)) < 2 or len(np.unique(y_test)) < 2:
+        raise ValueError("Error: The target variable must contain at least two classes in both training and test sets.")
+
+    # ✅ Step 2: Handle class imbalance **only on training data**
+    smote = SMOTE(random_state=42)
+    X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
+    # ✅ Step 3: Define available models
+    models = {
+        "Random Forest": RandomForestClassifier(class_weight="balanced"),
+        "Gradient Boosting": GradientBoostingClassifier(),
+        "Extra Trees": ExtraTreesClassifier(class_weight="balanced"),
+        "AdaBoost": AdaBoostClassifier(),
+        "Decision Tree": DecisionTreeClassifier(class_weight="balanced"),
+        "Logistic Regression": LogisticRegression(class_weight="balanced"),
+        "Support Vector Machine": SVC(class_weight="balanced"),
+        "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=5),
+        "Naive Bayes": GaussianNB(),
+        "Neural Network": MLPClassifier(),
+        "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+        "LightGBM": LGBMClassifier(),
+        "CatBoost": CatBoostClassifier(verbose=0)
+    }
+
+    # ✅ Step 4: Filter models if specific ones are selected
+    if selected_models:
+        models = {name: models[name] for name in selected_models if name in models}
+
+    # ✅ Step 5: Apply hyperparameters if provided
+    if hyperparams:
+        for model_name, params in hyperparams.items():
+            if model_name in models:
+                models[model_name].set_params(**params)
+
+    # ✅ Step 6: Define evaluation metrics
+    evaluation_metrics = {
+        "Accuracy": accuracy_score,
+        "Precision": lambda y_true, y_pred: precision_score(y_true, y_pred, average="weighted", zero_division=1),
+        "Recall": lambda y_true, y_pred: recall_score(y_true, y_pred, average="weighted", zero_division=1),
+        "F1-Score": lambda y_true, y_pred: f1_score(y_true, y_pred, average="weighted", zero_division=1),
+        "RMSE": lambda y_true, y_pred: mean_squared_error(y_true, y_pred, squared=False)
+    }
+
+    results = {}
+
+    # ✅ Step 7: Train and evaluate each model
+    for name, model in models.items():
+        model.fit(X_train_resampled, y_train_resampled)
+        y_pred = model.predict(X_test)
+
+        # ✅ Step 8: Compute and store performance metrics
+        results[name] = {metric_name: metric_func(y_test, y_pred) for metric_name, metric_func in evaluation_metrics.items()}
+
+        # ✅ Step 9: Debug - Check unique predictions
+        print(f"{name}: Unique Predictions - {np.unique(y_pred)}")
+
+    return results
+
+
+### models.py
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, ExtraTreesClassifier, AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+
+def get_models():
+    return {
+        "Random Forest": RandomForestClassifier(),
+        "Gradient Boosting": GradientBoostingClassifier(),
+        "Extra Trees": ExtraTreesClassifier(),
+        "AdaBoost": AdaBoostClassifier(),
+        "Decision Tree": DecisionTreeClassifier(),
+        "Logistic Regression": LogisticRegression(max_iter=500),  # Increased max_iter
+        "Support Vector Machine": SVC(probability=True),
+        "K-Nearest Neighbors": KNeighborsClassifier(),
+        "Naive Bayes": GaussianNB(),
+        "Neural Network": MLPClassifier(max_iter=500),  # Increased max_iter
+        "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+        "LightGBM": LGBMClassifier(),
+        "CatBoost": CatBoostClassifier(verbose=0)
+    }
+
+def get_hyperparameter_grids():
+    return {
+        "Random Forest": {"n_estimators": [50, 100, 200], "max_depth": [None, 10, 20]},
+        "Gradient Boosting": {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2]},
+        "Extra Trees": {"n_estimators": [50, 100, 200], "max_depth": [None, 10, 20]},
+        "AdaBoost": {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2]},
+        "Decision Tree": {"max_depth": [None, 10, 20], "min_samples_split": [2, 5, 10]},
+        "Logistic Regression": {"C": [0.1, 1, 10]},
+        "Support Vector Machine": {"C": [0.1, 1, 10], "kernel": ["linear", "rbf"]},
+        "K-Nearest Neighbors": {"n_neighbors": [3, 5, 10]},
+        "Neural Network": {"hidden_layer_sizes": [(50,), (100,)], "alpha": [0.0001, 0.01]},
+        "XGBoost": {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2]},
+        "LightGBM": {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2]},
+        "CatBoost": {"iterations": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2]}
+    }
+
+
+### preprocessing.py
+import numpy as np
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split, StratifiedKFold
+
+def preprocess_data(data, target_column):
+    X = data.drop(columns=[target_column])
+    y = data[target_column]
+    
+    # Normalize class labels to ensure they start from 0 and are continuous
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(y)
+    
+    num_features = X.select_dtypes(include=[np.number]).columns
+    cat_features = X.select_dtypes(exclude=[np.number]).columns
+    
+    num_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy='mean')),
+        ('scaler', StandardScaler())
+    ])
+    
+    cat_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('encoder', OneHotEncoder(handle_unknown='ignore', sparse_output=False))  # Convert to dense
+    ])
+    
+    preprocessor = ColumnTransformer([
+        ('num', num_pipeline, num_features),
+        ('cat', cat_pipeline, cat_features)
+    ])
+    
+    X_preprocessed = preprocessor.fit_transform(X)
+    X_preprocessed = np.asarray(X_preprocessed)  # Ensure dense output
+    
+    # Use stratified split to preserve class distribution
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    for train_index, test_index in skf.split(X_preprocessed, y):
+        X_train, X_test = X_preprocessed[train_index], X_preprocessed[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        break  # Use only the first split
+    
+    return X_train, X_test, y_train, y_test
+
+
+### utils.py
+import time
+
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"Execution time for {func.__name__}: {end_time - start_time:.4f} seconds")
+        return result
+    return wrapper
+
+def log_message(message):
+    print(f"[AutoMLBench]: {message}")
+
+
+### visualization.py
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def plot_performance(results, metrics=["Accuracy"]):
+    results_df = pd.DataFrame(results).T
+    results_df = results_df[metrics]
+    results_df.plot(kind='bar', figsize=(12, 6))
+    plt.title("Model Performance Comparison")
+    plt.ylabel("Score")
+    plt.xticks(rotation=45)
+    plt.legend(title="Metrics")
+    plt.grid(axis='y')
+    plt.show()
+

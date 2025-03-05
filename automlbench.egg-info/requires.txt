@@ -7,3 +7,5 @@ xgboost
 lightgbm
 shap
 lime
+catboost
+imbalanced-learn

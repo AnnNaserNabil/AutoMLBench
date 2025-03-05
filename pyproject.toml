@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "automlbench"
+version = "0.1.5.1"
+description = "A Python package for automated ML model benchmarking and comparison"
+readme = "README.md"
+authors = [
+    { name = "Ann Naser Nabil", email = "ann.n.nabil@gmail.com" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.7"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "xgboost",
+    "lightgbm",
+    "shap",
+    "lime",
+    "catboost",
+    "imbalanced-learn"
+]
+
+[project.urls]
+Homepage = "https://github.com/AnnNaserNabil/automlbench"
+Documentation = "https://github.com/AnnNaserNabil/automlbench/wiki"
+Repository = "https://github.com/AnnNaserNabil/automlbench"
+Issues = "https://github.com/AnnNaserNabil/automlbench/issues"
+
+[tool.setuptools]
+packages = ["automlbench"]
+
+[tool.setuptools.package-data]
+automlbench = ["*.txt", "*.md"]
+
+[project.scripts]
+automlbench = "automlbench.cli:main"  # If you have a CLI tool

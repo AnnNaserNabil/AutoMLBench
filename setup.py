@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="automlbench",
-    version="0.1.3",
+    version="0.1.5",
     author="Ann Naser Nabil",
     author_email="ann.n.nabil@gmail.com",
     description="A Python package for automated ML model benchmarking and comparison",
@@ -20,6 +20,9 @@ setup(
         "lightgbm",
         "shap",
         "lime",
+        "catboost",
+        "imbalanced-learn"
+
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
